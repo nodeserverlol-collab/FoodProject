@@ -4,10 +4,19 @@ FROM python:3.14-slim
 WORKDIR /app
 
 # Установка системных зависимостей для PostgreSQL и других библиотек
+# Перед установкой Python‑зависимостей
 RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libgtk2.0-dev \
     gcc \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    python3-dev
+
+
+# Затем установка Python‑пакетов
+RUN pip install --no-cache-dir -r requirements.txt
+
 
 # Копирование файлов зависимостей
 COPY requirements.txt .
