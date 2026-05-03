@@ -10,11 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Получаем URL из .env
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# Проверяем, что DATABASE_URL не None
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL не найден в .env файле!")
+# Правильный способ - читать из переменных окружения
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://fastapi_admin:supersecretzxc@localhost:5432/pizza_fastapi")
 
 # Убеждаемся, что используется asyncpg, а не psycopg2
 # Если в URL нет +asyncpg, добавляем его
