@@ -22,7 +22,7 @@ app = FastAPI(lifespan=lifespan, debug=True)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",  # Vite порт
+        "https://foodproject-pg8n.onrender.com/login",  # Vite порт
         "http://localhost:3000",  # Бекенд
         "http://localhost:8080",  # Альтернативный
     ],
