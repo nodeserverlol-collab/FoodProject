@@ -1,9 +1,8 @@
-# Используем стабильный Python
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
-# Устанавливаем системные зависимости и libmagic1
+# Установка системных зависимостей
 RUN apt-get update && apt-get install -y \
     pkg-config \
     libcairo2-dev \
@@ -15,13 +14,14 @@ RUN apt-get update && apt-get install -y \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем ОЧИЩЕННЫЙ файл с зависимостями
-COPY requirements-linux.txt requirements.txt
+# Копируем исходный requirements.txt
+COPY requirements.txt .
 
-# Устанавливаем пакеты
-RUN pip install --no-cache-dir -r requirements.txt
+# Фильтруем Windows-пакеты и устанавливаем
+RUN grep -v "python-magic-bin" requirements.txt > requirements-filtered.txt && \
+    pip install --no-cache-dir -r requirements-filtered.txt
 
-# Копируем весь проект
+# Копируем проект
 COPY . .
 
 EXPOSE 3000
