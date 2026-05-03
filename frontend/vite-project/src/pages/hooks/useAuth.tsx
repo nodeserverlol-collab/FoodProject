@@ -39,7 +39,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:3000/logout', {
+      await fetch('https://foodbackend-6ksq.onrender.com/logout', {
         method: 'POST',
         credentials: 'include'
       });
