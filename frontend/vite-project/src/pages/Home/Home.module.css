@@ -1,0 +1,508 @@
+/* src/pages/Home/Home.module.css */
+.home {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+/* Hero секция */
+.hero {
+  background: linear-gradient(135deg, #ff6900 0%, #ff9940 100%);
+  padding: 80px 20px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '🍕';
+  position: absolute;
+  font-size: 300px;
+  opacity: 0.1;
+  bottom: -50px;
+  right: -50px;
+  transform: rotate(-15deg);
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  animation: fadeInUp 0.6s ease;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.heroSubtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  animation: fadeInUp 0.6s ease 0.1s both;
+}
+
+.heroButton {
+  background: white;
+  color: #ff6900;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease 0.2s both;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.heroButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Контейнер */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.sectionTitle:after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: #ff6900;
+  margin: 1rem auto 0;
+  border-radius: 2px;
+}
+
+/* Сетка пицц */
+.pizzaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+/* Карточка пиццы */
+.pizzaCard {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.pizzaCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.imageWrapper {
+  position: relative;
+  overflow: hidden;
+  height: 250px;
+}
+
+.pizzaImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pizzaCard:hover .pizzaImage {
+  transform: scale(1.1);
+}
+
+.popularOverlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: linear-gradient(135deg, #ff6900, #ff9940);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.pizzaInfo {
+  padding: 20px;
+}
+
+.pizzaName {
+  font-size: 1.4rem;
+  margin: 0 0 10px;
+  color: #333;
+}
+
+.pizzaIngredients {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.pizzaFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.pizzaPrice {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff6900;
+}
+
+.pizzaButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.pizzaButton {
+  background: #ff6900;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.pizzaButton:hover {
+  background: #e05d00;
+  transform: scale(1.02);
+}
+
+.pizzaButtonInfo {
+  background: #f0f0f0;
+  color: #666;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.pizzaButtonInfo:hover {
+  background: #e0e0e0;
+  transform: scale(1.02);
+}
+
+/* Тоаст уведомление */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #4caf50;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  z-index: 1000;
+  animation: slideInRight 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cartCount {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+/* Модальное окно */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal {
+  background: white;
+  border-radius: 20px;
+  max-width: 550px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+  animation: slideIn 0.3s ease;
+}
+
+.modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: #ff6900;
+  border-radius: 10px;
+}
+
+.modalClose {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalClose:hover {
+  background: rgba(0,0,0,0.7);
+  transform: rotate(90deg);
+}
+
+.modalImage {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+}
+
+.modalTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.popularBadge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6900, #ff9940);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  margin: 0 auto 1rem;
+  text-align: center;
+  width: fit-content;
+}
+
+.modalInfo {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.modalInfoItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.modalInfoLabel {
+  font-weight: bold;
+  color: #666;
+}
+
+.modalInfoValue {
+  color: #333;
+  font-weight: 500;
+}
+
+.modalIngredients, .modalDescription {
+  margin: 1rem 0;
+}
+
+.modalIngredients h4, .modalDescription h4 {
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.modalIngredients p, .modalDescription p {
+  color: #666;
+  line-height: 1.5;
+}
+
+.modalButton {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #ff6900, #ff9940);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.modalButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 105, 0, 0.3);
+}
+
+.modalButtonCancel {
+  width: 100%;
+  padding: 10px;
+  background: #f0f0f0;
+  color: #666;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.modalButtonCancel:hover {
+  background: #e0e0e0;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+  
+  .hero {
+    padding: 60px 20px;
+  }
+  
+  .hero::before {
+    font-size: 200px;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem;
+  }
+  
+  .pizzaGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .pizzaCard {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .imageWrapper {
+    height: 200px;
+  }
+  
+  .modal {
+    padding: 1.5rem;
+  }
+  
+  .modalTitle {
+    font-size: 1.5rem;
+  }
+  
+  .pizzaButtons {
+    flex-direction: column;
+  }
+  
+  .toast {
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Для больших экранов */
+@media (min-width: 1200px) {
+  .pizzaGrid {
+    gap: 40px;
+  }
+  
+  .imageWrapper {
+    height: 280px;
+  }
+}

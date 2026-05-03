@@ -1,0 +1,267 @@
+/* src/pages/Admin/AdminPanel.module.css */
+.adminPanel {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
+  padding: 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Статистика */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+}
+
+.statValue {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ff6900;
+}
+
+.statLabel {
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* Таблица пользователей */
+.usersTable {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.usersTable h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+}
+
+.table tr:hover {
+  background: #f9f9f9;
+}
+
+.currentUser {
+  background: #fff8f0;
+}
+
+.youBadge {
+  background: #ff6900;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-left: 0.5rem;
+}
+
+/* Бейджи ролей */
+.badgeAdmin {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.badgeModerator {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.badgeUser {
+  background: #95a5a6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+/* Действия */
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.roleSelect {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: white;
+}
+
+.roleSelect:focus {
+  outline: none;
+  border-color: #ff6900;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: #fee;
+  transform: scale(1.1);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Сообщения */
+.message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  animation: slideIn 0.3s ease;
+}
+
+.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Доступ запрещен */
+.accessDenied {
+  text-align: center;
+  padding: 4rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.accessDenied h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Загрузка */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #ff6900;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .adminPanel {
+    padding: 1rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .roleSelect {
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+}

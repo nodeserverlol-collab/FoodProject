@@ -1,0 +1,197 @@
+/* src/pages/Account/AccountPage.module.css */
+.container {
+  min-height: calc(100vh - 200px);
+  padding: 2rem;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #ff6900 0%, #ff9940 100%);
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff6900;
+  margin: 0 auto 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.content {
+  padding: 2rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.infoRow {
+  display: flex;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.label {
+  width: 100px;
+  font-weight: 600;
+  color: #555;
+}
+
+.value {
+  flex: 1;
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #ff6900;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.editButton,
+.saveButton,
+.cancelButton,
+.logoutButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.editButton {
+  background: #ff6900;
+  color: white;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.editButton:hover {
+  background: #ff9940;
+}
+
+.saveButton {
+  background: #4caf50;
+  color: white;
+}
+
+.saveButton:hover {
+  background: #45a049;
+}
+
+.cancelButton {
+  background: #999;
+  color: white;
+}
+
+.cancelButton:hover {
+  background: #777;
+}
+
+.logoutButton {
+  background: #e74c3c;
+  color: white;
+  width: 100%;
+}
+
+.logoutButton:hover {
+  background: #c0392b;
+}
+
+.message {
+  margin: 1rem 2rem;
+  padding: 0.75rem;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .content {
+    padding: 1.5rem;
+  }
+  
+  .infoRow {
+    flex-direction: column;
+  }
+  
+  .label {
+    width: auto;
+    margin-bottom: 0.25rem;
+  }
+}
