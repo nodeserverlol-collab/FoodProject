@@ -1,59 +1,48 @@
-# db.py - с PostgreSQL и asyncpg
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Integer, String, Column
-from pydantic import BaseModel, EmailStr
 import os
-from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Загружаем .env файл
-load_dotenv()
+# Получаем URL из переменных окружения
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Получаем URL из .env
-# Правильный способ - читать из переменных окружения
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://fastapi_admin:supersecretzxc@localhost:5432/pizza_fastapi")
+# Проверка и нормализация URL
+if not DATABASE_URL:
+    raise ValueError(
+        "DATABASE_URL environment variable is not set. "
+        "Please add it in Render Environment Variables."
+    )
 
-# Убеждаемся, что используется asyncpg, а не psycopg2
-# Если в URL нет +asyncpg, добавляем его
-if "postgresql://" in DATABASE_URL and "+asyncpg" not in DATABASE_URL:
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
-    print(f"🔧 Исправлен URL на: {DATABASE_URL}")
+# Конвертируем postgresql:// в postgresql+asyncpg:// если нужно
+if DATABASE_URL.startswith("postgresql://") and "+asyncpg" not in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+    print("🔧 Converted URL to use asyncpg driver")
 
-print(f"📊 Подключение к БД: {DATABASE_URL.split('@')[0].split('://')[0]}://***@{DATABASE_URL.split('@')[1] if '@' in DATABASE_URL else '...'}")
+print(f"✅ Database driver: {DATABASE_URL.split('://')[0]}")
 
-# Создаем асинхронный engine с asyncpg
+# Создаем engine
 engine = create_async_engine(
-    DATABASE_URL, 
-    echo=True,
-    pool_size=5,
-    max_overflow=10
+    DATABASE_URL,
+    echo=True,  # Для отладки, в production можно убрать или установить False
+    pool_pre_ping=True,  # Проверка соединения перед использованием
+    pool_size=5,  # Размер пула соединений
+    max_overflow=10,  # Максимальное количество дополнительных соединений
 )
-AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-class Base(DeclarativeBase):
-    pass
+AsyncSessionLocal = sessionmaker(
+    engine, class_=AsyncSession, expire_on_commit=False
+)
 
-class Users(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    role = Column(String, default="user")  # Новая колонка для роли
+Base = declarative_base()
 
-# Pydantic модели
-class UserCreate(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-    role: str = "user" 
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
-
+async def init_db():
+    """Инициализация базы данных"""
+    async with engine.begin() as conn:
+        # Для production лучше использовать Alembic миграции
+        # await conn.run_sync(Base.metadata.create_all)
+        pass
 
 async def get_db():
+    """Генератор сессий БД"""
     async with AsyncSessionLocal() as session:
         try:
             yield session
@@ -63,9 +52,3 @@ async def get_db():
             raise
         finally:
             await session.close()
-
-async def init_db():
-    async with engine.begin() as conn:
-        # ВРЕМЕННО: удаляем все таблицы и создаем заново
-        await conn.run_sync(Base.metadata.create_all)
-        print("✅ Таблицы созданы в PostgreSQL (asyncpg)")
