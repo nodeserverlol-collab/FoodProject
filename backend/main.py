@@ -23,7 +23,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://foodproject-pg8n.onrender.com/login",  # Vite порт
-        "http://localhost:3000",  # Бекенд
+        "https://foodbackend-6ksq.onrender.com",  # Бекенд
         "http://localhost:8080",  # Альтернативный
     ],
     allow_credentials=True,  # Важно для cookies
