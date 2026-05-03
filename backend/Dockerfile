@@ -11,13 +11,15 @@ RUN apt-get update && apt-get install -y \
     gcc \
     python3-dev \
     libffi-dev \
+    libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Копирование и установка зависимостей
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование проекта
+# Удаляем Windows-специфичные пакеты и устанавливаем
+RUN grep -v "python-magic-bin" requirements.txt > requirements-clean.txt && \
+    pip install --no-cache-dir -r requirements-clean.txt
+
 COPY . .
 
 EXPOSE 3000
