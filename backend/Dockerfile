@@ -1,4 +1,4 @@
-FROM python:3.14-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -14,11 +14,12 @@ RUN apt-get update && apt-get install -y \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем исходный requirements.txt
+# Копируем requirements.txt
 COPY requirements.txt .
 
-# Фильтруем Windows-пакеты и устанавливаем
+# Фильтруем Windows-пакеты и исправляем конфликтующие версии
 RUN grep -v "python-magic-bin" requirements.txt > requirements-filtered.txt && \
+    sed -i 's/email-validator==1.3.0/email-validator>=2.0.0/g' requirements-filtered.txt && \
     pip install --no-cache-dir -r requirements-filtered.txt
 
 # Копируем проект
