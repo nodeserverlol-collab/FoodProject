@@ -24,7 +24,7 @@ export interface RegisterData {
 }
 
 const api = axios.create({
-  baseURL: 'https://foodbackend-6ksq.onrender.com',
+  baseURL: 'https://foodbackend-6ksq.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },

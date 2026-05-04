@@ -19,16 +19,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan, debug=True)
 
 # ✅ ПРАВИЛЬНАЯ НАСТРОЙКА CORS
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://foodproject-pg8n.onrender.com/login",  # Vite порт
-        "http://localhost:3000",  # Бекенд
-        "http://localhost:8080",  # Альтернативный
-    ],
-    allow_credentials=True,  # Важно для cookies
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Все методы
-    allow_headers=["*"],  # Все заголовки
+    allow_origins=["https://foodproject-pg8n.onrender.com"],  # ваш фронтенд
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 from router import router
