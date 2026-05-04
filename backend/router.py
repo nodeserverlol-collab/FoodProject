@@ -13,7 +13,7 @@ import jwt
 import secrets
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 # JWT настройки
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this")
