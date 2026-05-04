@@ -21,14 +21,19 @@ app = FastAPI(lifespan=lifespan, debug=True)
 # ✅ ПРАВИЛЬНАЯ НАСТРОЙКА CORS
 from fastapi.middleware.cors import CORSMiddleware
 
+origins = [
+    "https://foodproject-pg8n.onrender.com",  # ваш фронтенд
+    "http://localhost:3000",                   # для локального теста
+    "http://localhost:5173",                   # для Vite
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://foodproject-pg8n.onrender.com"],  # ваш фронтенд
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,          
+    allow_credentials=True,         
+    allow_methods=["*"],            
+    allow_headers=["*"],            
 )
-
 from router import router
 app.include_router(router)
 
