@@ -12,6 +12,7 @@ import aiohttp
 import jwt
 import secrets
 from pydantic import BaseModel
+from async_lru import alru_cache
 
 router = APIRouter(prefix="/api")
 
@@ -61,10 +62,54 @@ def require_role(required_role: str):
             raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
     return dependency
 
+# Кеширование для получения пользователя по ID
+@alru_cache(maxsize=128, ttl=60)  # TTL 60 секунд, максимум 128 записей
+async def get_cached_user(user_id: int, db: AsyncSession):
+    result = await db.execute(select(Users).where(Users.id == user_id))
+    return result.scalar_one_or_none()
+
+# Кеширование для получения пользователя по email
+@alru_cache(maxsize=128, ttl=60)
+async def get_cached_user_by_email(email: str, db: AsyncSession):
+    result = await db.execute(select(Users).where(Users.email == email))
+    return result.scalar_one_or_none()
+
+# Кеширование для получения всех пользователей (для админки)
+@alru_cache(maxsize=1, ttl=30)  # Одна запись на 30 секунд
+async def get_cached_all_users(db: AsyncSession):
+    result = await db.execute(select(Users))
+    users = result.scalars().all()
+    return [{"id": u.id, "name": u.name, "email": u.email, "role": u.role} for u in users]
+
+# Кеширование для статистики
+@alru_cache(maxsize=1, ttl=30)  # Одна запись на 30 секунд
+async def get_cached_stats(db: AsyncSession):
+    result = await db.execute(select(Users))
+    all_users = result.scalars().all()
+    total_users = len(all_users)
+    admin_count = sum(1 for u in all_users if u.role == "admin")
+    moderator_count = sum(1 for u in all_users if u.role == "moderator")
+    user_count = sum(1 for u in all_users if u.role == "user")
+    return {
+        "total_users": total_users,
+        "admins": admin_count,
+        "moderators": moderator_count,
+        "users": user_count
+    }
+
+# Функция для инвалидации кеша при изменении данных
+async def invalidate_user_cache(user_id: int = None, email: str = None):
+    if user_id:
+        get_cached_user.cache_invalidate(user_id)
+    if email:
+        get_cached_user_by_email.cache_invalidate(email)
+    get_cached_all_users.cache_invalidate()
+    get_cached_stats.cache_invalidate()
+
 @router.post("/register")
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    existing = await db.execute(select(Users).where(Users.email == user.email))
-    if existing.scalar_one_or_none():
+    existing = await get_cached_user_by_email(user.email, db)
+    if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     allowed_roles = ["user", "moderator", "admin"]
@@ -79,13 +124,15 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
+    
+    # Инвалидируем кеш после регистрации
+    await invalidate_user_cache(email=user.email)
 
     return {"id": new_user.id, "name": new_user.name, "email": new_user.email, "role": new_user.role}
 
 @router.post("/login")
 async def login(user: UserLogin, response: Response, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Users).where(Users.email == user.email))
-    db_user = result.scalar_one_or_none()
+    db_user = await get_cached_user_by_email(user.email, db)
 
     if not db_user or not pwd_context.verify(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -123,8 +170,8 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
-    result = await db.execute(select(Users).where(Users.id == int(user_id)))
-    user = result.scalar_one_or_none()
+    # Используем кешированный запрос
+    user = await get_cached_user(int(user_id), db)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -160,8 +207,7 @@ async def google_callback(code: str, response: Response, db: AsyncSession = Depe
             decoded_data = jwt.decode(id_token, options={"verify_signature": False})
             
             email = decoded_data["email"]
-            result = await db.execute(select(Users).where(Users.email == email))
-            db_user = result.scalar_one_or_none()
+            db_user = await get_cached_user_by_email(email, db)
             
             if not db_user:
                 random_password = secrets.token_urlsafe(32)
@@ -173,6 +219,8 @@ async def google_callback(code: str, response: Response, db: AsyncSession = Depe
                 user_id = new_user.id
                 user_name = new_user.name
                 user_role = new_user.role
+                # Инвалидируем кеш после создания пользователя
+                await invalidate_user_cache(email=email)
             else:
                 user_id = db_user.id
                 user_name = db_user.name
@@ -189,9 +237,9 @@ class UserUpdateRole(BaseModel):
 
 @router.get("/admin/users")
 async def get_all_users(user_info: dict = Depends(require_role("admin")), db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Users))
-    users = result.scalars().all()
-    return {"users": [{"id": u.id, "name": u.name, "email": u.email, "role": u.role} for u in users], "total": len(users)}
+    # Используем кешированный запрос
+    users = await get_cached_all_users(db)
+    return {"users": users, "total": len(users)}
 
 @router.put("/admin/users/{user_id}/role")
 async def update_user_role(user_id: int, role_data: UserUpdateRole, user_info: dict = Depends(require_role("admin")), db: AsyncSession = Depends(get_db)):
@@ -202,8 +250,14 @@ async def update_user_role(user_id: int, role_data: UserUpdateRole, user_info: d
     allowed_roles = ["user", "moderator", "admin"]
     if role_data.role not in allowed_roles:
         raise HTTPException(status_code=400, detail=f"Invalid role. Allowed: {', '.join(allowed_roles)}")
+    
+    old_email = user.email
     user.role = role_data.role
     await db.commit()
+    
+    # Инвалидируем кеш после обновления роли
+    await invalidate_user_cache(user_id=user_id, email=old_email)
+    
     return {"message": f"User {user.name} role updated to {role_data.role}"}
 
 @router.delete("/admin/users/{user_id}")
@@ -214,18 +268,18 @@ async def delete_user(user_id: int, user_info: dict = Depends(require_role("admi
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    user_email = user.email
     await db.delete(user)
     await db.commit()
+    
+    # Инвалидируем кеш после удаления пользователя
+    await invalidate_user_cache(user_id=user_id, email=user_email)
+    
     return {"message": f"User {user.name} deleted successfully"}
 
 @router.get("/admin/stats")
 async def get_admin_stats(user_info: dict = Depends(require_role("admin")), db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Users))
-    total_users = len(result.scalars().all())
-    result_admin = await db.execute(select(Users).where(Users.role == "admin"))
-    admin_count = len(result_admin.scalars().all())
-    result_moderator = await db.execute(select(Users).where(Users.role == "moderator"))
-    moderator_count = len(result_moderator.scalars().all())
-    result_user = await db.execute(select(Users).where(Users.role == "user"))
-    user_count = len(result_user.scalars().all())
-    return {"total_users": total_users, "admins": admin_count, "moderators": moderator_count, "users": user_count}
+    # Используем кешированную статистику
+    stats = await get_cached_stats(db)
+    return stats
