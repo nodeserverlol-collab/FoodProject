@@ -24,7 +24,7 @@ export interface RegisterData {
 }
 
 const api = axios.create({
-  baseURL: 'https://localhost:3000',
+  baseURL: 'http://localhost:3000',  // ✅ Changed from https to http
   headers: {
     'Content-Type': 'application/json',
   },

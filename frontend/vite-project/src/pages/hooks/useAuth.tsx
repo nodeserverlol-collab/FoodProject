@@ -39,7 +39,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      await fetch('localhost:3000/logout', {
+      await fetch('http://localhost:3000/logout', {
         method: 'POST',
         credentials: 'include'
       });
