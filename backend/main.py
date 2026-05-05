@@ -24,7 +24,7 @@ from fastapi.middleware.cors import CORSMiddleware
 origins = [
     "https://foodproject-pg8n.onrender.com",  # ваш фронтенд
     "http://localhost:3000",                   # для локального теста
-    "http://localhost:5173",                   # для Vite
+    "http://localhost:5173",             # для Vite
 ]
 
 app.add_middleware(
